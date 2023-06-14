@@ -346,99 +346,20 @@ Dockerfileの中身を読んでみます。
 では、 **petclinic-app** という名前のコンテナとしてビルドします。
 ```
 cd spring-petclinic-docker
-podman build -t linux_tweet_app .
+podman build -t petclinic-app . -f Dockerfile
+```
+出力は非常に長いので省略しますが、最後に"Successfully ....." という文言があればビルドは成功です。
+
+ビルドが完了したので、実行します。ここでもビルドと同じようにmvnによるダウンロードが行われるため、大量の時間がかかります。<br/>
+バックグラウンドだといつ終わったかわからないので、フォアグラウンドで実施します。
+
+```
+podman run -p 8082:8080 petclinic-app
 ```
 
-### 必要資材の作成
+PetClinic のアスキー文字が表示されたら、ほぼ完了です。ブラウザで http://localhost:8082 にアクセスし、アプリケーションが表示されることを確認します。
 
-Spring Bootアプリケーションを実行するために必要なソースコード一式を準備します。<br/>
-以下の内容をもとにファイルの作成とコードのコピーを行なって下さい。
-
-**pom.xml**
-
-```XML
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.example</groupId>
-    <artifactId>spring-docker-demo</artifactId>
-    <version>1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
-
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.4.1</version>
-        <relativePath/> <!-- lookup parent from repository -->
-    </parent>
-
-    <properties>
-        <java.version>11</java.version>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-    </dependencies>
-
-    <build>
-        <finalName>app</finalName>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
-</project>
-```
-
-**src/hello/HelloController.java**
-```Java
-package com.example.web.controller;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-@Controller
-public class HelloController {
-
-    @GetMapping("/")
-    public String root() {
-        return "hello/index";
-    }
-}
-```
-
-**index.html**
-```html
-Hello World
-```
-
-**Containerfile**
-```
-FROM maven:3.6.3-jdk-11 AS builder
-WORKDIR /tmp
-COPY ./src ./src
-COPY ./pom.xml .
-RUN mvn package
-FROM adoptopenjdk/openjdk11:debianslim-jre
-COPY --from=builder /tmp/target/app.jar /app/app.jar
-EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
-```
+![image](./images/102-2.png)
 
 ## 参考
 Containerfile/Dockerfileには多くのコマンドがあり、すべては紹介しきれません。より多くのコマンドを知りたい方は、以下をご確認ください。
