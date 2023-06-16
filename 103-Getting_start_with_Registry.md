@@ -6,11 +6,11 @@
 こちらにコンテナをpushしてみましょう。
 https://hub.docker.com
 
-本当は、Red Hatのコンテナレジストリ「Quay.io」にアカウントを作り対のですが、Red Hatアカウントを作ったり大変なので省略します。
-Quayは「キー」と呼ぶそうです。
+本当は、Red Hatのコンテナレジストリ「Quay.io」にアカウントを作りたいのですが、Red Hatアカウントを作成するのは少し時間がかかるので、今回は手軽にdockerを使います。
+ちなみに、Quayは「キー」と呼ぶそうです。
 
 ### Docker Hub にサインインする
-コンソール作業に戻ります。loginコマンドでサインインします。
+コンソール作業に戻ります。loginコマンドでDocker Hub にサインインします。
 ```
 podman login docker.io
 ```
@@ -19,23 +19,22 @@ podman login docker.io
 
 ### Docker Hub を使ってみよう
 
-#### 1. 新しいコンテナを作成する
-コンテナイメージ ubuntu を実行し、新しいファイルを含むコンテナを新たに作成します。
+今回は、 102 で作成した python flask WebアプリをDocker Hubにpushします。
 
-```
-podman run ubuntu echo "<すきな言葉をいれて実行してください>" > newfile
-```
-コンテナはすぐに終了します。psコマンドでコンテナIDを表示し、どこかに書き留めましょう。(次で必要になります)
-
-```
-podman ps -a
+まずは、Docker HubにプッシュするコンテナのコンテナIDを確認します。
+```sh
+$ podman ps
+CONTAINER ID  IMAGE                                COMMAND        CREATED        STATUS        PORTS                   NAMES
+d63564fb5890  localhost/python-hello-world:latest  python app.py  8 minutes ago  Up 8 minutes  0.0.0.0:5001->5000/tcp  awesome_ardinghelli
 ```
 
-#### 2. コンテナーをイメージにタグ付けする
-次に、コンテナーを既知のイメージ名にタグ付けする必要があります
+上記では`d63564fb5890` がコンテナIDです。みなさんの環境ごとに違うIDとなるのでご留意下さい。
+
+#### 1. コンテナーをイメージにタグ付けする
+次に、コンテナーを既知のイメージ名にタグ付けします。
 
 ```
-podman commit <container id> quay.io/<username>/<reponame>
+podman commit <container id> docker.io/<username>/<reponame>
 ```
 
 `<container id>`: 先ほど書き留めたコンテナID<br/>
@@ -43,25 +42,16 @@ podman commit <container id> quay.io/<username>/<reponame>
 `<reponame>`: 新しく作成したコンテナの名前
 
 
-#### 3. コンテナイメージを コンテナレジストリ にプッシュする
+#### 2. コンテナイメージを コンテナレジストリ にプッシュする
 ```
 podman push docker.io/<username>/<reponame>
 ```
 
 これで、コンテナイメージがコンテナレジストリに登録されました。
 
-#### 4. 登録されたコンテナイメージを確認
+#### 3. 登録されたコンテナイメージを確認
 
 ブラウザで以下にアクセスしましょう
 https://hub.docker.com/repositories/<username>
 
 今回登録したコンテナイメージがありましたか？
-
-#### 5. コンテナレジストリ からイメージをダウンロードする
-他の参加者がpushしたイメージをrunしてみましょう！reponameを他の参加者のレポジトリ名に変更して、以下を実行します。
-
-```
-podman run docker.io/<username>/<reponame>
-```
-
-自分が入れた好きな言葉とは別の言葉が出ましたか?

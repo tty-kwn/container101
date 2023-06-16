@@ -30,7 +30,7 @@ podmanのもぐらくんたちを素敵なアスキーアートで表現して�
 ## podman コマンドによる各種操作
 いろいろ実行してみましょう。
 
-![lifecycle](./images/image1.png)
+![lifecycle](./images/101-1.png)
 
 ### 1. コンテナ実行前の事前ダウンロード(podman pull)
 

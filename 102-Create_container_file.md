@@ -9,7 +9,7 @@
 Googleなどで検索する際は「Containerfile」または「Dockerfile」のそれぞれで検索してOKです。
 
 作業用フォルダ work を作成し、移動します。
-```
+```sh
 mkdir work
 cd work
 ```
@@ -20,7 +20,7 @@ HelloWorldと出力するアプリ **hw** を作成します。でもただ文�
 ### Containerfileの作成
 これからアプリを複数作るので、hwフォルダを用意します。
 その中に"Hello World"と書かれた messagefile と、 Containerfile を作成します。
-```
+```sh
 mkdir hw
 cd hw
 echo "Hello World" > messagefile
@@ -28,7 +28,7 @@ vi Containerfile
 ```
 
 vi エディタで Containerfileを開いたら、以下を記載します。
-```
+```Dockerfile
 FROM fedora
 RUN yum -y update && yum -y install figlet
 ADD ./messagefile /messagefile
@@ -50,15 +50,14 @@ Containerfileは、コマンドを1行づつ記載します。
 Containerfileからコンテナイメージをビルド・生成します。 buildコマンドを使います。<br/>
 ここで、最後の **.(ドット)** を抜かさないようにして下さい。これは現在のディレクトリを対象にビルドをする、という意図です。<br/>
 また、"-t" は "--tag" の省略形で、指定しているのは、hw がリポジトリ名、 1.0 がtag(およそバージョンと同義)になります。
-```
+```sh
 podman build -t hw:1.0 .
 ```
 
 <details>
 <summary>実行例 (yumによるインストールがほとんど)</summary>
 
-```
-$ podman build .
+```sh
 STEP 1/4: FROM fedora
 STEP 2/4: RUN yum -y update && yum -y install figlet
 Fedora 38 - x86_64                              3.0 MB/s |  66 MB     00:21
@@ -171,7 +170,7 @@ COMMIT
 </details>
 
 作成したコンテナイメージを確認します。
-```
+```sh
 podman images
 ```
 
@@ -319,14 +318,145 @@ podman run -d -p 8081:80 linux_tweet_app
 
 ![image](./images/102-1.png)
 
-## Spring Boot (Java) アプリケーションのコンテナ化
-o
+## Python Webアプリケーションのコンテナ化
+
+### Python アプリの作成 (コンテナ は使用しません)
+
+PythonのWebアプリを作成します。PythonにはWebアプリを作成するための様々なライブラリ・フレームワークが存在しますが、今回は Flask というシンプルなWebフレームワークを使います。
+
+app.pyというファイルを作成し、以下のコードをコピーして下さい。
+
+```python
+from flask import Flask
+
+app = Flask(__name__)
+
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=5000)
+```
+
+```sh
+$ python3 app.py 
+ * Running on http://0.0.0.0:5000/ (Press CTRL+C to quit)
+```
+
+### ビルドと実行
+
+Python がローカルにインストールされていなくても心配しないでください！Python がインストールされていなくても、Python アプリを実行することはできます。Docker コンテナを使用する利点の 1 つは、Python をコンテナに組み込めることです。したがって、Python がホスト上にインストールされている必要はありません。 
+
+`Containerfile` を作成します。以下のコードを貼り付けて下さい。
+
+```Dockerfile
+FROM python:3.11-alpine3.18
+RUN pip install flask
+CMD ["python","app.py"]
+COPY app.py /app.py
+```
+
+内容はこれまでと変わりませんので、説明は簡単にします。
+ベースイメージは alpineというlinuxにpythonが導入されたイメージを使います。
+flaskライブラリを導入し、flaskを実行します。
+
+```sh
+podman build -t python-hello-world .
+```
+
+<details>
+<summary>実行例</summary>
+```sh
+STEP 1/4: FROM python:3.11-alpine3.18
+STEP 2/4: RUN pip install flask
+Collecting flask
+  Downloading Flask-2.3.2-py3-none-any.whl (96 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 96.9/96.9 kB 727.9 kB/s eta 0:00:00
+Collecting Werkzeug>=2.3.3 (from flask)
+  Downloading Werkzeug-2.3.6-py3-none-any.whl (242 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 242.5/242.5 kB 902.1 kB/s eta 0:00:00
+Collecting Jinja2>=3.1.2 (from flask)
+  Downloading Jinja2-3.1.2-py3-none-any.whl (133 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 133.1/133.1 kB 1.2 MB/s eta 0:00:00
+Collecting itsdangerous>=2.1.2 (from flask)
+  Downloading itsdangerous-2.1.2-py3-none-any.whl (15 kB)
+Collecting click>=8.1.3 (from flask)
+  Downloading click-8.1.3-py3-none-any.whl (96 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 96.6/96.6 kB 916.8 kB/s eta 0:00:00
+Collecting blinker>=1.6.2 (from flask)
+  Downloading blinker-1.6.2-py3-none-any.whl (13 kB)
+Collecting MarkupSafe>=2.0 (from Jinja2>=3.1.2->flask)
+  Downloading MarkupSafe-2.1.3-cp311-cp311-musllinux_1_1_x86_64.whl (33 kB)
+Installing collected packages: MarkupSafe, itsdangerous, click, blinker, Werkzeug, Jinja2, flask
+Successfully installed Jinja2-3.1.2 MarkupSafe-2.1.3 Werkzeug-2.3.6 blinker-1.6.2 click-8.1.3 flask-2.3.2 itsdangerous-2.1.2
+WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+--> cb754fd91d35
+STEP 3/4: CMD ["python","app.py"]
+--> d4eb23236adc
+STEP 4/4: COPY app.py /app.py
+COMMIT python-hello-world
+--> 6115bed64482
+Successfully tagged localhost/python-hello-world:latest
+6115bed6448297625ed1426c6e0f85907bad553c8550d7a637f959434fd4327c
+```
+</details>
+
+`podman images` を実行し、コンテナイメージがあることを確認します。
+```sh
+podman images
+```
+
+<details open>
+<summary>実行例</summary>
+  
+```sh
+$ podman images
+REPOSITORY                                   TAG              IMAGE ID      CREATED        SIZE
+localhost/python-hello-world                 latest           6115bed64482  3 minutes ago  72.2 MB
+```
+</details>
+
+イメージのビルドが完了したら、そのイメージを実行して機能するかどうかを確認します。
+
+```sh
+podman run -p 5001:5000 -d python-hello-world
+```
+
+ブラウザー内で http://localhost:5001 にアクセスして、結果を確認します。 
+ブラウザー上に「hello world!」と表示されるはずです。
+
+次に、コンテナのログ出力を確認しましょう。
+
+アプリケーションからログを確認する場合は、`podman logs` コマンドを使用できます。デフォルトでは、`podman logs` はアプリケーションが送信した内容を標準出力に出力します。実行中のコンテナの ID は、`podman ps` を使用して確認できます。
+
+```sh
+$ podman ps
+CONTAINER ID  IMAGE                                COMMAND        CREATED         STATUS         PORTS                   NAMES
+d63564fb5890  localhost/python-hello-world:latest  python app.py  33 seconds ago  Up 33 seconds  0.0.0.0:5001->5000/tcp  awesome_ardinghelli
+$ podman logs d63564fb5890
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.88.0.16:5000
+Press CTRL+C to quit
+10.88.0.16 - - [01/Jun/2023 06:18:08] "GET / HTTP/1.1" 200 -
+```
+
+以上でコンテナ開発の第一歩は完了です。
+このPython Webアプリは続けて次のコンテンツでも使います！
+
+## (余裕のある人向け) Spring Boot (Java) アプリケーションのコンテナ化
+
+注) このコンテンツはビルドや実行ごとに数分待ちが発生します。時間が余っている人だけ実施下さい。
 
 最後に、Webサーバ nginx を使って Spring Boot Java Webアプリ **petclinic-app** を配信します。
 
 ### ソースコード一式のclone
 ソースコードを一から作るのは無理なので、ソースコードをダウンロードします。
-```
+```sh
 git clone https://github.com/dockersamples/spring-petclinic-docker.git
 ```
 
@@ -344,7 +474,7 @@ Dockerfileの中身を読んでみます。
 
 
 では、 **petclinic-app** という名前のコンテナとしてビルドします。
-```
+```sh
 cd spring-petclinic-docker
 podman build -t petclinic-app . -f Dockerfile
 ```
@@ -353,7 +483,7 @@ podman build -t petclinic-app . -f Dockerfile
 ビルドが完了したので、実行します。ここでもビルドと同じようにmvnによるダウンロードが行われるため、大量の時間がかかります。<br/>
 バックグラウンドだといつ終わったかわからないので、フォアグラウンドで実施します。
 
-```
+```sh
 podman run -p 8082:8080 petclinic-app
 ```
 
