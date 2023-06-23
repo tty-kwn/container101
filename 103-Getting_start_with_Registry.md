@@ -3,8 +3,11 @@
 ## はじめてのDocker Hub
 
 今回は個人でも簡単にアカウントが作れる、Docker Hubを使います。<br/>
-こちらにコンテナをpushしてみましょう。
-https://hub.docker.com
+[こちら](https://hub.docker.com)にコンテナをpushしてみましょう。
+
+Docker Hubへのアカウント作成は、以下のサイトを参考にして下さい。<br/>
+https://docs.docker.jp/windows/step_five.html#docker-hub <br/>
+リポジトリの作成まで記載していますが、そこまで行う必要はありません。ブラウザで Docker Hub のページを開き、自分のプロフィール・ページを表示できれば準備は完了です。
 
 本当は、Red Hatのコンテナレジストリ「Quay.io」にアカウントを作りたいのですが、Red Hatアカウントを作成するのは少し時間がかかるので、今回は手軽にdockerを使います。
 ちなみに、Quayは「キー」と呼ぶそうです。
@@ -15,11 +18,11 @@ https://hub.docker.com
 podman login docker.io
 ```
 
-ユーザ名とパスワードを求められるので、別途共有するログイン情報を入力します。
+ユーザ名とパスワードを求められますので、入力して下さい。
 
 ### Docker Hub を使ってみよう
 
-今回は、 102 で作成した python flask WebアプリをDocker Hubにpushします。
+今回は、 [前ページ 102](102-Create_container_file.md) で作成した python flask WebアプリをDocker Hubにpushします。
 
 まずは、Docker HubにプッシュするコンテナのコンテナIDを確認します。
 ```sh
