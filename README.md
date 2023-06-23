@@ -87,4 +87,12 @@ podman コマンドは docker コマンドとほぼ互換があります。 podm
 ここまで、コンテナについてざっくりと説明させていただきました。
 
 ここからは、早速ハンズオンを始めましょう。
-ハンズオンコンテンツは別のMarkdownファイルとして作成しています。まずは [101 コンテナ操作方法の理解](./101-How_to_use_container.md) から始めていきましょう。
+ハンズオンコンテンツは別のMarkdownファイルとして作成しています。
+
+1. [101-コンテナ操作方法の理解](101-How_to_use_container.md)
+2. [102-コンテナ開発](102-Create_container_file.md)
+3. [103-コンテナレジストリの利用](103-Getting_start_with_Registry.md)
+4. [104-OpenShiftへのデプロイ](104-Deploy_image_to_OpenShift.md)
+5. [(オプション)105-APコンテナとDBコンテナの連携](105-Integrated_ap_with_db.md)
+
+まずは [101 コンテナ操作方法の理解](./101-How_to_use_container.md) から始めていきましょう。
