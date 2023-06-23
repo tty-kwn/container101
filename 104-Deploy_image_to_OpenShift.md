@@ -1,17 +1,21 @@
 # OpenShiftへのデプロイ
 
 最後に、コンテナイメージをOpenShiftにデプロイしてみましょう。
+皆様の環境のOpenShiftにログインしてください。
 
-OpenShiftにログインしてください。
+もしOpenShiftの環境をお持ちではない方は、[Red Hat Developer Sandbox](https://developers.redhat.com/developer-sandbox) または OpenShift Local をお試しください。
+どちらも Red Hatアカウントの作成が必須となりますが、無料で利用可能です。
 
 ## プロジェクトの作成
+
+**注意) Red Hat Developer Sandboxをお使いの方は、プロジェクト作成権限が与えられていません。この作業は飛ばして、提供済みのプロジェクトを利用して下さい。**
 
 OpenShiftのWebコンソールにて「管理者」パースペクティブを選択し、プロジェクトをクリックします。<br/>
 「プロジェクトの作成」ボタンをクリックするとプロジェクトの作成画面が開きますので、お好きなプロジェクト名を入力し、作成ボタンをクリックして下さい。(名前は英数小文字で)
 
 ![image1](./images/104-1.png)
 
-注意) プロジェクトとは、OpenShiftを複数の案件で分けて使いたい、という時に論理的に分ける仕組みです。案件ごとにプロジェクトを分けるケースが多いです。Kubernetesではnamespaceといいます。(OpenShiftでもnamespaceという時があります)
+補足) プロジェクトとは、OpenShiftを複数の案件で分けて使いたい、という時に論理的に分ける仕組みです。案件ごとにプロジェクトを分けるケースが多いです。Kubernetesではnamespaceといいます。(OpenShiftでもnamespaceという時があります)
 
 ## コンテナイメージのデプロイ
 
